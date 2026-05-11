@@ -22,11 +22,17 @@ public class Collection implements ManageCollection {
         this.cards = cards;
     }
 
-    // Adds a card to the in-memory list
+    // Adds a card to the in-memory list and confirms to the user
     @Override
     public void addCard(Card card) {
         cards.add(card);
         System.out.printf("'%s' has been added to your collection.\n", card.getName());
+    }
+
+    // Silently loads a card into the list on startup without printing a message.
+    // Used when restoring saved cards from the database so the terminal stays clean.
+    public void loadCard(Card card) {
+        cards.add(card);
     }
 
     // Removes a card by name - case-insensitive so the user doesn't have to be exact

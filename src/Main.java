@@ -26,10 +26,10 @@ public class Main {
         // Create the cards table if this is the first time running the app
         db.createTable();
 
-        // Load all previously saved cards from the database into memory
+        // Load all previously saved cards from the database into memory silently
         ArrayList<Card> saved = db.getAllCards();
         for (Card card : saved) {
-            collection.addCard(card);
+            collection.loadCard(card);
         }
 
         System.out.println("\nWelcome to Collection Pit - Your MTG Collection Manager");
