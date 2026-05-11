@@ -59,11 +59,14 @@ public class Main {
                     handleRemoveCard();
                     break;
                 case 6:
+                    handleImportCsv();
+                    break;
+                case 7:
                     running = false;
                     System.out.println("\nGoodbye! Happy collecting.\n");
                     break;
                 default:
-                    System.out.println("Invalid option. Please enter a number from 1 to 6.");
+                    System.out.println("Invalid option. Please enter a number from 1 to 7.");
             }
         }
 
@@ -78,7 +81,8 @@ public class Main {
         System.out.println("3. Search for a card");
         System.out.println("4. Update card quantity");
         System.out.println("5. Remove a card");
-        System.out.println("6. Exit");
+        System.out.println("6. Import collection from CSV");
+        System.out.println("7. Exit");
         System.out.print("Enter your choice: ");
     }
 
@@ -230,5 +234,40 @@ public class Main {
         // Remove from memory and from the database
         collection.removeCard(name);
         db.deleteCard(name);
+    }
+
+    // Imports a CSV file exported from Excel into the database and in-memory collection.
+    // The CSV must be placed in the Collection_Pit project folder.
+    // Expected columns: Name, Set, Rarity, Foil, Qty, Price, Mana Cost, Card Text
+    public static void handleImportCsv() {
+        System.out.println("\n--- Import Collection from CSV ---");
+        System.out.println("Export your Excel file as CSV and place it in the Collection_Pit folder.");
+        System.out.print("Enter the CSV filename (ex: collection.csv): ");
+        String filename = scanner.nextLine().trim();
+
+        if (filename.isEmpty()) {
+            System.out.println("No filename entered. Import cancelled.");
+            return;
+        }
+
+        System.out.printf("\nImporting '%s' - this may take a moment for large collections...\n", filename);
+
+        int count = db.importFromCsv(filename);
+
+        if (count > 0) {
+            System.out.printf("\nImport complete! %d cards added to the database.\n", count);
+            System.out.println("Reloading collection into memory...");
+
+            // Refresh the in-memory collection from the database so it reflects the import
+            collection = new Collection();
+            ArrayList<Card> all = db.getAllCards();
+            for (Card card : all) {
+                collection.loadCard(card);
+            }
+
+            System.out.printf("Collection now contains %d card(s).\n", collection.getSize());
+        } else {
+            System.out.println("No cards were imported. Check the filename and CSV format.");
+        }
     }
 }
