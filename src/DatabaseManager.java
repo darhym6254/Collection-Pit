@@ -32,7 +32,13 @@ public class DatabaseManager {
 
     // Opens and returns a connection to the database.
     // Called internally by each CRUD method.
+    // Class.forName() explicitly loads the SQLite driver so Java can find it at runtime.
     private Connection connect() throws SQLException {
+        try {
+            Class.forName("org.sqlite.JDBC");
+        } catch (ClassNotFoundException e) {
+            System.out.println("SQLite driver not found. Make sure sqlite-jdbc jar is in the lib/ folder.");
+        }
         return DriverManager.getConnection(databaseUrl);
     }
 
